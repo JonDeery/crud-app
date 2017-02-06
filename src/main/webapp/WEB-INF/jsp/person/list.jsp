@@ -12,41 +12,47 @@
 
 <html>
     <head>
+   	    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+   	    <link href="<c:url value="/resources/css/bootstrap/css/bootstrap.css" />" rel="stylesheet">
+   	    <script src="<c:url value="/resources/css/bootstrap/js/bootstrap.js" />"></script>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Person Listing</title>
     </head>
     <body>
-        <h1>Person Listing</h1>     
-        <p><a href="${pageContext.request.contextPath}/person/create">Create New Person</a></p>
-        <c:choose>
-            <c:when test="${fn:length(persons) gt 0}">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Email Address</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <c:forEach items="${persons}" var="person">
-                            <tr>
-                                <td>${person.firstName}</td>
-                                <td>${person.lastName}</td>
-                                <td>${person.emailAddress}</td>
-                                <td>
-                                    <a href="${pageContext.request.contextPath}/person/edit/${person.personId}">Edit Person</a>
-                                    <a href="${pageContext.request.contextPath}/person/delete/${person.personId}">Delete Person</a>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                    </tbody>
-                </table>
-            </c:when>
-            <c:otherwise>
-                <p>No results found.</p>
-            </c:otherwise>
-        </c:choose>
+        <div class="container">
+     		<h1 class="page-header">Person Listing</h1>     
+       		 <p><a class="btn" href="${pageContext.request.contextPath}/person/create">Create New Person</a>
+       		 	<a class="btn" href="${pageContext.request.contextPath}/client/list">Manage Clients</a></p>
+	        <c:choose>
+	            <c:when test="${fn:length(persons) gt 0}">
+	                <table class="table">
+	                    <thead class="thead-inverse">
+	                        <tr>
+	                            <th>First Name</th>
+	                            <th>Last Name</th>
+	                            <th>Email Address</th>
+	                            <th>Actions</th>
+	                        </tr>
+	                    </thead>
+	                    <tbody>
+	                        <c:forEach items="${persons}" var="person">
+	                            <tr>
+	                                <td>${person.firstName}</td>
+	                                <td>${person.lastName}</td>
+	                                <td>${person.emailAddress}</td>
+	                                <td>
+	                                    <a class='btn' href="${pageContext.request.contextPath}/person/edit/${person.personId}">Edit Person</a>
+	                                    <a class='btn' href="${pageContext.request.contextPath}/person/delete/${person.personId}">Delete Person</a>
+	                                </td>
+	                            </tr>
+	                        </c:forEach>
+	                    </tbody>
+	                </table>
+	            </c:when>
+	            <c:otherwise>
+	                <p>No results found.</p>
+	            </c:otherwise>
+	        </c:choose>
+        </div>
     </body>
 </html>

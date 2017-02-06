@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.aquent.crudapp.domain.Person;
+import com.aquent.crudapp.service.ClientService;
 import com.aquent.crudapp.service.PersonService;
 
 /**
@@ -23,8 +24,11 @@ import com.aquent.crudapp.service.PersonService;
 public class PersonController {
 
     public static final String COMMAND_DELETE = "Delete";
+    private boolean redirectToClient = false;
+    private Integer client = -1;
 
     @Inject private PersonService personService;
+    @Inject private ClientService clientService;
 
     /**
      * Renders the listing page.
@@ -47,7 +51,21 @@ public class PersonController {
     public ModelAndView create() {
         ModelAndView mav = new ModelAndView("person/create");
         mav.addObject("person", new Person());
+        mav.addObject("clients", clientService.listClients());
         mav.addObject("errors", new ArrayList<String>());
+        return mav;
+    }
+    
+    @RequestMapping(value = "create/{clientId}", method = RequestMethod.GET)
+    public ModelAndView createWithClient(@PathVariable Integer clientId) {
+        ModelAndView mav = new ModelAndView("person/create");
+        mav.addObject("person", new Person(clientId));
+        mav.addObject("clients", clientService.listClients());
+        mav.addObject("errors", new ArrayList<String>());
+        // There is probably a better way to redirect the Create person page back to client, 
+        // but I was running out of time and was having trouble with it
+        redirectToClient = true;
+        client = clientId;
         return mav;
     }
 
@@ -63,8 +81,28 @@ public class PersonController {
     public ModelAndView create(Person person) {
         List<String> errors = personService.validatePerson(person);
         if (errors.isEmpty()) {
+        	if(client > -1){
+        		person.setClient(client);
+        	}
             personService.createPerson(person);
+            if(redirectToClient && client > -1){
+            	redirectToClient = false;
+                return new ModelAndView("redirect:/client/edit/" + client);
+            }
             return new ModelAndView("redirect:/person/list");
+        } else {
+            ModelAndView mav = new ModelAndView("person/create");
+            mav.addObject("person", person);
+            mav.addObject("errors", errors);
+            return mav;
+        }
+    }
+    @RequestMapping(value = "create/{client}", method = RequestMethod.POST)
+    public ModelAndView createWithClient(Person person, @PathVariable("client") Integer clientId) {
+        List<String> errors = personService.validatePerson(person);
+        if (errors.isEmpty()) {
+            personService.createPerson(person);
+            return new ModelAndView("redirect:/client/edit/" + clientId);
         } else {
             ModelAndView mav = new ModelAndView("person/create");
             mav.addObject("person", person);
@@ -83,6 +121,7 @@ public class PersonController {
     public ModelAndView edit(@PathVariable Integer personId) {
         ModelAndView mav = new ModelAndView("person/edit");
         mav.addObject("person", personService.readPerson(personId));
+        mav.addObject("clients", clientService.listClients());
         mav.addObject("errors", new ArrayList<String>());
         return mav;
     }

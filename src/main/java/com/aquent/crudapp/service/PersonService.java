@@ -14,7 +14,7 @@ public interface PersonService {
      *
      * @return list of person records
      */
-    List<Person> listPeople();
+    List<Person> listPeople();    
 
     /**
      * Creates a new person record.
